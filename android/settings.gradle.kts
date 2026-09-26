@@ -11,6 +11,10 @@ pluginManagement {
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
+        // Prefer mirrors first: Maven Central 403s some GH Actions / CN networks.
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/central") }
+        maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         google()
         mavenCentral()
         gradlePluginPortal()

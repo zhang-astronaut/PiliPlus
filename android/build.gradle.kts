@@ -2,6 +2,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 allprojects {
     repositories {
+        // Prefer mirrors first: Maven Central 403s some GH Actions / CN networks.
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/central") }
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
         google()
         mavenCentral()
     }
