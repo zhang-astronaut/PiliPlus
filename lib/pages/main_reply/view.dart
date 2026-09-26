@@ -3,7 +3,7 @@ import 'package:PiliPlus/common/sliver_single_child_delegate.dart';
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/sliver/sliver_floating_header.dart';
 import 'package:PiliPlus/common/widgets/view_safe_area.dart';
 import 'package:PiliPlus/grpc/bilibili/main/community/reply/v1.pb.dart'
@@ -18,6 +18,7 @@ import 'package:PiliPlus/utils/feed_back.dart';
 import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/utils.dart';
 import 'package:easy_debounce/easy_throttle.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -59,16 +60,29 @@ class _MainReplyPageState extends State<MainReplyPage>
   @override
   Widget build(BuildContext context) {
     final colorScheme = ColorScheme.of(context);
-    return SimpleScaffold(
-      appBar: AppBar(title: const Text('查看评论')),
-      body: fabAnimWrapper(
+    return PiliMiuixPage(
+      title: '查看评论',
+      floatingActionButton: SlideTransition(
+        position: fabAnimation,
+        child: MiuixFloatingActionButton(
+          onPressed: () {
+            try {
+              feedBack();
+              _controller.onReply(
+                null,
+                oid: _controller.oid,
+                replyType: _controller.replyType,
+              );
+            } catch (_) {}
+          },
+          child: const MiuixIcon(icon: Icons.reply),
+        ),
+      ),
+      content: (context, contentPadding) => fabAnimWrapper(
         child: refreshIndicator(
           onRefresh: _controller.onRefresh,
           child: Padding(
-            padding: EdgeInsets.only(
-              left: padding.left,
-              right: padding.right,
-            ),
+            padding: contentPadding,
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
@@ -80,30 +94,6 @@ class _MainReplyPageState extends State<MainReplyPage>
             ),
           ),
         ).constraintWidth(),
-      ),
-      fab: SlideTransition(
-        position: fabAnimation,
-        child: Padding(
-          padding: .only(
-            right: kFloatingActionButtonMargin + padding.right,
-            bottom: kFloatingActionButtonMargin + padding.bottom,
-          ),
-          child: FloatingActionButton(
-            heroTag: null,
-            onPressed: () {
-              try {
-                feedBack();
-                _controller.onReply(
-                  null,
-                  oid: _controller.oid,
-                  replyType: _controller.replyType,
-                );
-              } catch (_) {}
-            },
-            tooltip: '评论',
-            child: const Icon(Icons.reply),
-          ),
-        ),
       ),
     );
   }
@@ -215,16 +205,11 @@ class _MainReplyPageState extends State<MainReplyPage>
       int oid = replyItem.oid.toInt();
       int rpid = replyItem.id.toInt();
       Get.to(
-        SimpleScaffold(
-          appBar: AppBar(
-            title: const Text('评论详情'),
-            shape: Border(
-              bottom: BorderSide(
-                color: colorScheme.outline.withValues(alpha: 0.1),
-              ),
-            ),
-          ),
-          body: ViewSafeArea(
+        PiliMiuixPage(
+          title: '评论详情',
+          content: (context, contentPadding) => Padding(
+            padding: contentPadding,
+            child: ViewSafeArea(
             child: VideoReplyReplyPanel(
               enableSlide: false,
               id: id,
@@ -236,6 +221,7 @@ class _MainReplyPageState extends State<MainReplyPage>
               upMid: _controller.upMid,
             ),
           ).constraintWidth(),
+          ),
         ),
         routeName: 'dynamicDetail-Copy',
       );

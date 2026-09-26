@@ -2,12 +2,14 @@ import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/button/icon_button.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/common/widgets/progress_bar/segment_progress_bar.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
 import 'package:PiliPlus/pages/common/slide/common_slide_page.dart';
 import 'package:PiliPlus/pages/video/controller.dart';
 import 'package:PiliPlus/plugin/pl_player/controller.dart';
 import 'package:PiliPlus/utils/duration_utils.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ViewPointsPage extends CommonSlidePage {
@@ -36,19 +38,19 @@ class _ViewPointsPageState extends State<ViewPointsPage>
   @override
   Widget buildPage(ThemeData theme) {
     return SimpleScaffold(
-      appBar: Container(
+      appBar: BarBlur(child: Container(
         height: 45,
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: theme.colorScheme.outline.withValues(alpha: 0.1),
+              color: MiuixTheme.of(context).colors.dividerLine,
             ),
           ),
         ),
         child: Row(
           children: [
             const SizedBox(width: 16),
-            const Expanded(child: Text('分段信息', style: TextStyle(fontSize: 16))),
+            const Expanded(child: MiuixText('分段信息')),
             Obx(
               () => Transform.scale(
                 alignment: Alignment.centerLeft,
@@ -69,6 +71,7 @@ class _ViewPointsPageState extends State<ViewPointsPage>
             const SizedBox(width: 16),
           ],
         ),
+      ),
       ),
       body: enableSlide ? slideList(theme) : buildList(theme),
     );

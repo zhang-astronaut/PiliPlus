@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:PiliPlus/common/assets.dart';
 import 'package:PiliPlus/common/constants.dart';
 import 'package:PiliPlus/common/style.dart';
-import 'package:PiliPlus/common/widgets/floating_navigation_bar.dart';
 import 'package:PiliPlus/common/widgets/flutter/pop_scope.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/common/widgets/main_layout.dart';
@@ -22,8 +22,19 @@ import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:PiliPlus/utils/storage.dart';
 import 'package:PiliPlus/utils/storage_key.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_miuix/miuix.dart'
+    show
+        MiuixFloatingNavigationBar,
+        MiuixFloatingNavigationBarItem,
+        MiuixGlassNavigationBar,
+        MiuixGlassNavigationItem,
+        MiuixLayerBackdrop,
+        MiuixLayerBackdropCapture,
+        MiuixNavigationBar,
+        MiuixNavigationBarItem;
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:PiliPlus/utils/ui_style_controller.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:win32/win32.dart' as kernel32;
 import 'package:window_manager/window_manager.dart';
@@ -47,6 +58,7 @@ class _MainAppState extends PopScopeState<MainApp>
   late EdgeInsets _padding;
   late ColorScheme _colorScheme;
   Brightness? _brightness;
+  final _glassBackdrop = MiuixLayerBackdrop();
 
   @override
   bool get initCanPop => false;
@@ -128,6 +140,7 @@ class _MainAppState extends PopScopeState<MainApp>
     }
     removeObserverMobile(this);
     PiliScheme.listener?.cancel();
+    _glassBackdrop.dispose();
     GStorage.close();
     super.dispose();
   }
@@ -304,78 +317,91 @@ class _MainAppState extends PopScopeState<MainApp>
 
   @override
   void onPopInvokedWithResult(bool didPop, Object? result) {
+    // Root shell: first back goes home, next back exits. Child routes handle
+    // predictive pop via the shared PopScope wrapper.
     if (_mainController.directExitOnBack) {
       _onBack();
-    } else {
-      if (_mainController.selectedIndex.value != 0) {
-        _mainController
-          ..setIndex(0)
-          ..barOffset?.value = 0.0
-          ..showBottomBar?.value = true
-          ..setSearchBar();
-      } else {
-        _onBack();
-      }
+      return;
     }
+    if (_mainController.selectedIndex.value != 0) {
+      _mainController
+        ..setIndex(0)
+        ..barOffset?.value = 0.0
+        ..showBottomBar?.value = true
+        ..setSearchBar();
+      return;
+    }
+    _onBack();
   }
 
   Widget? get _bottomNav {
     Widget? bottomNav;
     if (_mainController.navigationBars.length > 1) {
-      if (_mainController.floatingNavBar) {
-        bottomNav = Obx(
-          () => FloatingNavigationBar(
-            onDestinationSelected: _mainController.setIndex,
-            selectedIndex: _mainController.selectedIndex.value,
-            destinations: _mainController.navigationBars
-                .map(
-                  (e) => FloatingNavigationDestination(
-                    label: e.label,
-                    icon: _buildIcon(type: e),
-                    selectedIcon: _buildIcon(type: e, selected: true),
+      final style = UiStyleController.to;
+      bottomNav = Obx(() {
+        final floating = style.floatingNavBar.value;
+        final glass = style.liquidGlass.value;
+        final blur = style.barBlur.value;
+        final selected = _mainController.selectedIndex.value;
+
+        if (floating && glass) {
+          return MiuixGlassNavigationBar(
+            backdrop: _glassBackdrop,
+            selectedIndex: selected,
+            onSelect: _mainController.setIndex,
+            items: [
+              for (final e in _mainController.navigationBars)
+                MiuixGlassNavigationItem(
+                  icon: _buildIcon(type: e, selected: selected == _mainController.navigationBars.indexOf(e)),
+                  label: e.label,
+                ),
+            ],
+          );
+        }
+
+        if (floating) {
+          return MiuixFloatingNavigationBar(
+            children: [
+              for (var i = 0; i < _mainController.navigationBars.length; i++)
+                MiuixFloatingNavigationBarItem(
+                  selected: selected == i,
+                  onPressed: () => _mainController.setIndex(i),
+                  icon: _buildIcon(
+                    type: _mainController.navigationBars[i],
+                    selected: selected == i,
                   ),
-                )
-                .toList(),
+                  label: _mainController.navigationBars[i].label,
+                ),
+            ],
+          );
+        }
+
+        final bar = MiuixNavigationBar(
+          children: [
+            for (var i = 0; i < _mainController.navigationBars.length; i++)
+              MiuixNavigationBarItem(
+                selected: selected == i,
+                onPressed: () => _mainController.setIndex(i),
+                icon: _buildIcon(
+                  type: _mainController.navigationBars[i],
+                  selected: selected == i,
+                ),
+                label: _mainController.navigationBars[i].label,
+              ),
+          ],
+        );
+
+        if (!blur) return bar;
+        return ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: ColoredBox(
+              color: _colorScheme.surface.withValues(alpha: 0.78),
+              child: bar,
+            ),
           ),
         );
-      } else if (_mainController.enableMYBar) {
-        bottomNav = Obx(
-          () => NavigationBar(
-            maintainBottomViewPadding: true,
-            onDestinationSelected: _mainController.setIndex,
-            selectedIndex: _mainController.selectedIndex.value,
-            destinations: _mainController.navigationBars
-                .map(
-                  (e) => NavigationDestination(
-                    label: e.label,
-                    icon: _buildIcon(type: e),
-                    selectedIcon: _buildIcon(type: e, selected: true),
-                  ),
-                )
-                .toList(),
-          ),
-        );
-      } else {
-        bottomNav = Obx(
-          () => BottomNavigationBar(
-            currentIndex: _mainController.selectedIndex.value,
-            onTap: _mainController.setIndex,
-            iconSize: 16,
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
-            type: .fixed,
-            items: _mainController.navigationBars
-                .map(
-                  (e) => BottomNavigationBarItem(
-                    label: e.label,
-                    icon: _buildIcon(type: e),
-                    activeIcon: _buildIcon(type: e, selected: true),
-                  ),
-                )
-                .toList(),
-          ),
-        );
-      }
+      });
 
       if (_mainController.hideBottomBar) {
         if (_mainController.barOffset case final barOffset?) {
@@ -517,11 +543,25 @@ class _MainAppState extends PopScopeState<MainApp>
       padding = .only(top: _padding.top, right: _padding.right);
     }
 
+    final pageBody = Padding(padding: padding, child: child);
+    final style = UiStyleController.to;
+
     child = Material(
-      child: MainLayout(
-        sideBar: sideBar,
-        bottomNav: bottomNav,
-        body: Padding(padding: padding, child: child),
+      child: Obx(
+        () {
+          Widget body = pageBody;
+          if (style.floatingNavBar.value && style.liquidGlass.value) {
+            body = MiuixLayerBackdropCapture(
+              backdrop: _glassBackdrop,
+              child: body,
+            );
+          }
+          return MainLayout(
+            sideBar: sideBar,
+            bottomNav: bottomNav,
+            body: body,
+          );
+        },
       ),
     );
 

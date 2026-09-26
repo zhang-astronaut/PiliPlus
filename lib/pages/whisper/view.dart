@@ -2,7 +2,7 @@ import 'package:PiliPlus/common/skeleton/whisper_item.dart';
 import 'package:PiliPlus/common/sliver_single_child_delegate.dart';
 import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/grpc/bilibili/app/im/v1.pb.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/pages/whisper/controller.dart';
@@ -12,6 +12,7 @@ import 'package:PiliPlus/utils/extension/three_dot_ext.dart';
 import 'package:PiliPlus/utils/theme_utils.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class WhisperPage extends StatefulWidget {
@@ -28,21 +29,19 @@ class _WhisperPageState extends State<WhisperPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final padding = MediaQuery.viewPaddingOf(context);
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: const Text('消息'),
-        actions: [
-          IconButton(
-            tooltip: '新增粉丝',
-            onPressed: () => Get.toNamed(
-              '/webview',
-              parameters: {
-                'url':
-                    'https://www.bilibili.com/h5/follow/newFans?navhide=1&${ThemeUtils.themeUrl(theme.isDark)}',
-              },
-            ),
-            icon: const Icon(Icons.account_circle_outlined),
+    return PiliMiuixPage(
+      title: '消息',
+      actions: [
+        MiuixIconButton(
+          onPressed: () => Get.toNamed(
+            '/webview',
+            parameters: {
+              'url':
+                  'https://www.bilibili.com/h5/follow/newFans?navhide=1&${ThemeUtils.themeUrl(theme.isDark)}',
+            },
           ),
+          child: const MiuixIcon(icon: Icons.account_circle_outlined),
+        ),
           Obx(() {
             final outsideItem = _controller.outsideItem.value;
             if (outsideItem != null && outsideItem.isNotEmpty) {
@@ -92,11 +91,12 @@ class _WhisperPageState extends State<WhisperPage> {
           }),
           const SizedBox(width: 5),
         ],
-      ),
-      body: refreshIndicator(
+      content: (context, contentPadding) => refreshIndicator(
         onRefresh: _controller.onRefresh,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: contentPadding,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             _buildTopItems(theme, padding),
             SliverPadding(
@@ -104,6 +104,7 @@ class _WhisperPageState extends State<WhisperPage> {
               sliver: Obx(() => _buildBody(_controller.loadingState.value)),
             ),
           ],
+          ),
         ),
       ),
     );

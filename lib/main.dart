@@ -8,7 +8,6 @@ import 'package:PiliPlus/common/widgets/route_aware_mixin.dart';
 import 'package:PiliPlus/common/widgets/scale_app.dart';
 import 'package:PiliPlus/common/widgets/scroll_behavior.dart';
 import 'package:PiliPlus/http/init.dart';
-import 'package:PiliPlus/models/common/theme/theme_color_type.dart';
 import 'package:PiliPlus/plugin/pl_player/utils/fullscreen.dart';
 import 'package:PiliPlus/router/app_pages.dart';
 import 'package:PiliPlus/services/account_service.dart';
@@ -26,10 +25,12 @@ import 'package:PiliPlus/utils/max_screen_size.dart';
 import 'package:PiliPlus/utils/path_utils.dart';
 import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:PiliPlus/utils/request_utils.dart';
+import 'package:PiliPlus/utils/miuix_theme_bridge.dart';
 import 'package:PiliPlus/utils/storage.dart';
 import 'package:PiliPlus/utils/storage_key.dart';
 import 'package:PiliPlus/utils/storage_pref.dart';
 import 'package:PiliPlus/utils/theme_utils.dart';
+import 'package:PiliPlus/utils/ui_style_controller.dart';
 import 'package:PiliPlus/utils/utils.dart';
 import 'package:catcher_2/catcher_2.dart';
 import 'package:collection/collection.dart';
@@ -38,6 +39,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_miuix/miuix.dart' show MiuixSystemTheme, MiuixThemeData;
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
@@ -109,7 +111,8 @@ void main() async {
   ]);
   Get
     ..lazyPut(AccountService.new)
-    ..lazyPut(DownloadService.new);
+    ..lazyPut(DownloadService.new)
+    ..put(UiStyleController());
   HttpOverrides.global = _CustomHttpOverrides();
 
   if (PlatformUtils.isMobile) {
@@ -248,32 +251,18 @@ class MyApp extends StatelessWidget {
   static ColorScheme? _light, _dark;
 
   static (ThemeData, ThemeData) getAllTheme() {
-    final dynamicColor = _light != null && _dark != null && Pref.dynamicColor;
-
-    final ColorScheme lightScheme, darkScheme;
-    if (dynamicColor) {
-      lightScheme = _light!;
-      darkScheme = _dark!;
-    } else {
-      final customColor = Pref.customColor;
-      final brandColor =
-          colorThemeTypes.elementAtOrNull(customColor)?.color ??
-          Color(customColor);
-      final variant = Pref.schemeVariant;
-
-      lightScheme = brandColor.asColorSchemeSeed(variant, .light);
-      darkScheme = brandColor.asColorSchemeSeed(variant, .dark);
-    }
-
+    final fontWeight = Pref.appFontWeight;
+    final fontFamily = FontUtils.fontFamily;
     return (
-      ThemeUtils.lightTheme = ThemeUtils.getThemeData(
-        colorScheme: lightScheme,
-        isDynamic: dynamicColor,
+      ThemeUtils.lightTheme = themeDataFromMiuix(
+        MiuixThemeData.light(),
+        fontFamily: fontFamily,
+        fontWeight: fontWeight,
       ),
-      ThemeUtils.darkTheme = ThemeUtils.getThemeData(
-        isDark: true,
-        colorScheme: darkScheme,
-        isDynamic: dynamicColor,
+      ThemeUtils.darkTheme = themeDataFromMiuix(
+        MiuixThemeData.dark(),
+        fontFamily: fontFamily,
+        fontWeight: fontWeight,
       ),
     );
   }
@@ -281,33 +270,47 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (light, dark) = getAllTheme();
-    return GetMaterialApp(
-      title: Constants.appName,
-      theme: light,
-      darkTheme: dark,
-      themeMode: ThemeUtils.themeMode = Pref.themeMode,
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      locale: const Locale("zh", "CN"),
-      fallbackLocale: const Locale("zh", "CN"),
-      supportedLocales: const [Locale("zh", "CN"), Locale("en", "US")],
-      initialRoute: '/',
-      getPages: Routes.getPages,
-      defaultTransition: Pref.pageTransition,
-      builder: FlutterSmartDialog.init(
-        toastBuilder: CustomToast.new,
-        loadingBuilder: LoadingWidget.new,
-        notifyStyle: const FlutterSmartNotifyStyle(
-          warningBuilder: NotifyWarning.new,
+    // Force platform brightness to match app themeMode so MiuixSystemTheme stays in sync.
+    final themeMode = ThemeUtils.themeMode = Pref.themeMode;
+    final forcedBrightness = switch (themeMode) {
+      ThemeMode.light => Brightness.light,
+      ThemeMode.dark => Brightness.dark,
+      ThemeMode.system => MediaQuery.platformBrightnessOf(context),
+    };
+    return MediaQuery(
+      data: MediaQuery.of(
+        context,
+      ).copyWith(platformBrightness: forcedBrightness),
+      child: MiuixSystemTheme(
+        child: GetMaterialApp(
+          title: Constants.appName,
+          theme: light,
+          darkTheme: dark,
+          themeMode: themeMode,
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          locale: const Locale("zh", "CN"),
+          fallbackLocale: const Locale("zh", "CN"),
+          supportedLocales: const [Locale("zh", "CN"), Locale("en", "US")],
+          initialRoute: '/',
+          getPages: Routes.getPages,
+          defaultTransition: Pref.pageTransition,
+          builder: FlutterSmartDialog.init(
+            toastBuilder: CustomToast.new,
+            loadingBuilder: LoadingWidget.new,
+            notifyStyle: const FlutterSmartNotifyStyle(
+              warningBuilder: NotifyWarning.new,
+            ),
+            builder: _builder,
+          ),
+          navigatorObservers: [
+            routeObserver,
+            FlutterSmartDialog.observer,
+          ],
+          scrollBehavior: PlatformUtils.isDesktop
+              ? const CustomScrollBehavior()
+              : null,
         ),
-        builder: _builder,
       ),
-      navigatorObservers: [
-        routeObserver,
-        FlutterSmartDialog.observer,
-      ],
-      scrollBehavior: PlatformUtils.isDesktop
-          ? const CustomScrollBehavior()
-          : null,
     );
   }
 

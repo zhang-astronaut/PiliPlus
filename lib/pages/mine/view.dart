@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:PiliPlus/common/assets.dart';
 import 'package:PiliPlus/common/style.dart';
-import 'package:PiliPlus/common/widgets/flutter/list_tile.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/common/widgets/player_bar.dart';
@@ -22,10 +22,11 @@ import 'package:PiliPlus/utils/extension/theme_ext.dart';
 import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:PiliPlus/utils/storage.dart';
 import 'package:PiliPlus/utils/utils.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:material_ui/material_ui.dart' hide ListTile;
+import 'package:material_ui/material_ui.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key, this.showBackBtn = false});
@@ -71,9 +72,11 @@ class _MediaPageState extends CommonPageState<MinePage>
     final secondary = theme.colorScheme.secondary;
     return Column(
       children: [
-        Padding(
-          padding: const .symmetric(vertical: 10),
-          child: _buildHeaderActions,
+        BarBlur(
+          child: Padding(
+            padding: const .symmetric(vertical: 10),
+            child: _buildHeaderActions,
+          ),
         ),
         Expanded(
           child: Material(
@@ -446,51 +449,30 @@ class _MediaPageState extends CommonPageState<MinePage>
   );
 
   Widget _buildFav(ThemeData theme, Color secondary) {
+    final colors = MiuixTheme.of(context).colors;
     return Column(
       children: [
-        Divider(
-          height: 20,
-          color: theme.dividerColor.withValues(alpha: 0.1),
+        MiuixHorizontalDivider(
+          color: colors.dividerLine.withValues(alpha: 0.1),
         ),
-        ListTile(
-          onTap: () => Get.toNamed('/fav')?.whenComplete(_autoRefresh),
-          dense: true,
-          title: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: '我的收藏  ',
-                    style: TextStyle(
-                      fontSize: theme.textTheme.titleMedium!.fontSize,
-                      fontWeight: .bold,
-                    ),
-                  ),
-                  if (controller.favFolderCount != null)
-                    TextSpan(
-                      text: "${controller.favFolderCount}  ",
-                      style: TextStyle(
-                        fontSize: theme.textTheme.titleSmall!.fontSize,
-                        color: secondary,
-                      ),
-                    ),
-                  WidgetSpan(
-                    child: Icon(
-                      Icons.arrow_forward_ios,
-                      size: 18,
-                      color: secondary,
-                    ),
-                  ),
-                ],
-              ),
+        MiuixBasicComponent(
+          title: '我的收藏',
+          summary: controller.favFolderCount == null
+              ? ''
+              : '${controller.favFolderCount} 个文件夹',
+          onClick: () => Get.toNamed('/fav')?.whenComplete(_autoRefresh),
+          endActions: [
+            IconButton(
+              tooltip: '刷新',
+              onPressed: controller.onRefresh,
+              icon: const Icon(Icons.refresh, size: 20),
             ),
-          ),
-          trailing: IconButton(
-            tooltip: '刷新',
-            onPressed: controller.onRefresh,
-            icon: const Icon(Icons.refresh, size: 20),
-          ),
+            Icon(
+              Icons.chevron_right,
+              size: 18,
+              color: colors.onSurfaceVariantSummary,
+            ),
+          ],
         ),
         _buildFavBody(theme, secondary, controller.loadingState.value),
       ],

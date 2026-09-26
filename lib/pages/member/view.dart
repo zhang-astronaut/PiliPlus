@@ -47,6 +47,7 @@ import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class MemberPage extends StatefulWidget {
@@ -336,12 +337,11 @@ class _MemberPageState extends State<MemberPage> {
   List<Widget> _actions(ColorScheme theme) => [
     if (_userController.reserves?.isNotEmpty ?? false)
       _reserveBtn(_userController.reserves!, theme),
-    IconButton(
-      tooltip: '搜索',
+    MiuixIconButton(
       onPressed: () => Get.toNamed(
         '/memberSearch?mid=$_mid&uname=${_userController.username}',
       ),
-      icon: const Icon(Icons.search_outlined),
+      child: const MiuixIcon(icon: Icons.search_outlined),
     ),
     PopupMenuButton(
       icon: const Icon(Icons.more_vert),

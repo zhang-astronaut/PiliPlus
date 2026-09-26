@@ -37,6 +37,7 @@ import 'package:PiliPlus/utils/storage.dart';
 import 'package:PiliPlus/utils/storage_key.dart';
 import 'package:PiliPlus/utils/storage_pref.dart';
 import 'package:PiliPlus/utils/theme_utils.dart';
+import 'package:PiliPlus/utils/ui_style_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
@@ -45,6 +46,7 @@ import 'package:material_ui/material_ui.dart' hide StatefulBuilder;
 import 'package:path/path.dart' as path;
 
 List<SettingsModel> get styleSettings => [
+  const SectionModel('布局'),
   if (PlatformUtils.isDesktop) ...[
     const SwitchModel(
       title: '显示窗口标题栏',
@@ -117,13 +119,40 @@ List<SettingsModel> get styleSettings => [
     defaultVal: true,
     needReboot: true,
   ),
-  const SwitchModel(
-    title: '悬浮底栏',
-    leading: Icon(MdiIcons.soundbar),
-    setKey: SettingBoxKey.floatingNavBar,
-    defaultVal: false,
-    needReboot: true,
+  const SectionModel('外观效果'),
+  SwitchModel(
+    title: '模糊',
+    subtitle: '启用顶栏和底栏的模糊效果',
+    leading: const Icon(Icons.blur_on_outlined),
+    setKey: SettingBoxKey.barBlur,
+    defaultVal: true,
+    onChanged: (value) => UiStyleController.to.setBarBlur(value),
   ),
+  SwitchModel(
+    title: '悬浮底栏',
+    subtitle: '使用悬浮圆角底栏',
+    leading: const Icon(MdiIcons.soundbar),
+    setKey: SettingBoxKey.floatingNavBar,
+    defaultVal: true,
+    onChanged: (value) => UiStyleController.to.setFloatingNavBar(value),
+  ),
+  SwitchModel(
+    title: '液态玻璃',
+    subtitle: '启用悬浮底栏的液态玻璃效果',
+    leading: const Icon(Icons.auto_awesome_outlined),
+    setKey: SettingBoxKey.liquidGlass,
+    defaultVal: true,
+    onChanged: (value) => UiStyleController.to.setLiquidGlass(value),
+  ),
+  if (!PlatformUtils.isDesktop)
+    SwitchModel(
+      title: '预测性返回手势',
+      subtitle: '启用对预测性返回手势的支持',
+      leading: const Icon(Icons.back_hand_outlined),
+      setKey: SettingBoxKey.predictiveBack,
+      defaultVal: true,
+      onChanged: (value) => UiStyleController.to.setPredictiveBack(value),
+    ),
   NormalModel(
     leading: const Icon(Icons.calendar_view_week_outlined),
     title: '列表宽度（dp）限制',
@@ -143,6 +172,7 @@ List<SettingsModel> get styleSettings => [
     setKey: SettingBoxKey.darkVideoPage,
     defaultVal: false,
   ),
+  const SectionModel('动态与消息'),
   SwitchModel(
     title: '动态页启用瀑布流',
     subtitle: '关闭会显示为单列',
@@ -198,6 +228,7 @@ List<SettingsModel> get styleSettings => [
     getSubtitle: () =>
         '当前消息类型：${Pref.msgUnReadTypeV2.map((item) => item.title).join('、')}',
   ),
+  const SectionModel('首页与导航'),
   PopupModel(
     title: '顶/底栏收起类型',
     leading: const Icon(MdiIcons.arrowExpandVertical),

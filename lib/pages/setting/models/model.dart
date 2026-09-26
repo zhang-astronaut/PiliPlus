@@ -6,6 +6,7 @@ import 'package:PiliPlus/pages/setting/widgets/select_dialog.dart';
 import 'package:PiliPlus/pages/setting/widgets/switch_item.dart';
 import 'package:PiliPlus/utils/storage.dart';
 import 'package:flutter/services.dart' show FilteringTextInputFormatter;
+import 'package:flutter_miuix/miuix.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart' hide PopupMenuItemSelected;
@@ -28,6 +29,25 @@ sealed class SettingsModel {
     this.contentPadding,
     this.titleStyle,
   });
+}
+
+/// Section header used to group preference rows under a [MiuixSmallTitle].
+class SectionModel extends SettingsModel {
+  final String sectionTitle;
+
+  const SectionModel(this.sectionTitle);
+
+  @override
+  String? get title => sectionTitle;
+
+  @override
+  String get effectiveTitle => sectionTitle;
+
+  @override
+  String? get effectiveSubtitle => null;
+
+  @override
+  Widget get widget => MiuixSmallTitle(sectionTitle);
 }
 
 class SplitModel extends SettingsModel {
@@ -239,15 +259,12 @@ SettingsModel getBanWordModel({
             ],
           ),
           actions: [
-            TextButton(
+            MiuixTextButton(
+              '取消',
               onPressed: Get.back,
-              child: Text(
-                '取消',
-                style: TextStyle(color: ColorScheme.of(context).outline),
-              ),
             ),
-            TextButton(
-              child: const Text('保存'),
+            MiuixTextButton(
+              '保存',
               onPressed: () {
                 Get.back();
                 banWord = editValue;
@@ -315,14 +332,12 @@ SettingsModel getVideoFilterSelectModel({
                 decoration: InputDecoration(suffixText: suffix),
               ),
               actions: [
-                TextButton(
+                MiuixTextButton(
+                  '取消',
                   onPressed: Get.back,
-                  child: Text(
-                    '取消',
-                    style: TextStyle(color: ColorScheme.of(context).outline),
-                  ),
                 ),
-                TextButton(
+                MiuixTextButton(
+                  '确定',
                   onPressed: () {
                     try {
                       result = int.parse(valueStr);
@@ -331,7 +346,6 @@ SettingsModel getVideoFilterSelectModel({
                       SmartDialog.showToast(e.toString());
                     }
                   },
-                  child: const Text('确定'),
                 ),
               ],
             ),

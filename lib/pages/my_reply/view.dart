@@ -1,7 +1,7 @@
 import 'package:PiliPlus/common/widgets/dialog/dialog.dart';
 import 'package:PiliPlus/common/widgets/dialog/export_import.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/view_sliver_safe_area.dart';
 import 'package:PiliPlus/grpc/bilibili/main/community/reply/v1.pb.dart'
     show ReplyInfo;
@@ -15,6 +15,7 @@ import 'package:PiliPlus/utils/storage_pref.dart';
 import 'package:PiliPlus/utils/utils.dart';
 import 'package:PiliPlus/utils/waterfall.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
@@ -43,40 +44,37 @@ class _MyReplyState extends State<MyReply> with DynMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: const Text('我的评论'),
-        actions: [
-          if (kDebugMode)
-            IconButton(
-              tooltip: 'Clear',
-              onPressed: () => showConfirmDialog(
-                context: context,
-                title: const Text('Clear Local Storage?'),
-                onConfirm: () {
-                  GStorage.reply!.clear();
-                  _replies.clear();
-                  setState(() {});
-                },
-              ),
-              icon: const Icon(Icons.clear_all),
+    return PiliMiuixPage(
+      title: '我的评论',
+      actions: [
+        if (kDebugMode)
+          MiuixIconButton(
+            onPressed: () => showConfirmDialog(
+              context: context,
+              title: const Text('Clear Local Storage?'),
+              onConfirm: () {
+                GStorage.reply!.clear();
+                _replies.clear();
+                setState(() {});
+              },
             ),
-          IconButton(
-            tooltip: '导出',
-            onPressed: _showExportDialog,
-            icon: const Icon(Icons.file_upload_outlined),
+            child: const MiuixIcon(icon: Icons.clear_all),
           ),
-          IconButton(
-            tooltip: '导入',
-            onPressed: _showImportDialog,
-            icon: const Icon(Icons.file_download_outlined),
-          ),
-          const SizedBox(width: 6),
-        ],
-      ),
-      body: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
+        MiuixIconButton(
+          onPressed: _showExportDialog,
+          child: const MiuixIcon(icon: Icons.file_upload_outlined),
+        ),
+        MiuixIconButton(
+          onPressed: _showImportDialog,
+          child: const MiuixIcon(icon: Icons.file_download_outlined),
+        ),
+        const SizedBox(width: 6),
+      ],
+      content: (context, contentPadding) => Padding(
+        padding: contentPadding,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
           _replies.isNotEmpty
               ? ViewSliverSafeArea(
                   sliver: SliverWaterfallFlow(
@@ -95,7 +93,8 @@ class _MyReplyState extends State<MyReply> with DynMixin {
                   ),
                 )
               : const HttpError(),
-        ],
+          ],
+        ),
       ),
     );
   }

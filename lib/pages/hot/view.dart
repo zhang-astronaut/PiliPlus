@@ -1,3 +1,4 @@
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
@@ -12,6 +13,7 @@ import 'package:PiliPlus/pages/hot/controller.dart';
 import 'package:PiliPlus/pages/rank/view.dart';
 import 'package:PiliPlus/utils/grid.dart';
 import 'package:PiliPlus/utils/storage_pref.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -47,9 +49,9 @@ class _HotPageState extends State<HotPage>
             type: .emote,
             src: iconUrl,
           ),
-          Text(
+          MiuixText(
             title,
-            style: const TextStyle(fontSize: 12),
+            fontSize: 12,
           ),
         ],
       ),
@@ -86,7 +88,9 @@ class _HotPageState extends State<HotPage>
                           } else {
                             Get.to(
                               SimpleScaffold(
-                                appBar: AppBar(title: const Text('排行榜')),
+                                appBar: BarBlur(
+                                  child: AppBar(title: const Text('排行榜')),
+                                ),
                                 body: const ViewSafeArea(child: RankPage()),
                               ),
                             );

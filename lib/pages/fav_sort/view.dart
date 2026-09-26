@@ -1,5 +1,5 @@
 import 'package:PiliPlus/common/widgets/reorder_mixin.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/http/fav.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models_new/fav/fav_detail/media.dart';
@@ -8,6 +8,7 @@ import 'package:PiliPlus/pages/fav_detail/widget/fav_video_card.dart';
 import 'package:PiliPlus/utils/extension/iterable_ext.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class FavSortPage extends StatefulWidget {
@@ -47,37 +48,36 @@ class _FavSortPageState extends State<FavSortPage> with ReorderMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: Text('排序: ${_favDetailController.folderInfo.value.title}'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (sort.isEmpty) {
-                Get.back();
-                return;
-              }
-              FavHttp.sortFav(
-                mediaId: _favDetailController.mediaId,
-                sort: sort.join(','),
-              ).then((res) {
-                if (res.isSuccess) {
-                  SmartDialog.showToast('排序完成');
-                  _favDetailController.loadingState.value = Success(sortList);
-                  if (mounted) {
-                    Get.back();
-                  }
-                } else {
-                  res.toast();
+    return PiliMiuixPage(
+      title: '排序: ${_favDetailController.folderInfo.value.title}',
+      actions: [
+        MiuixTextButton(
+          '完成',
+          onPressed: () {
+            if (sort.isEmpty) {
+              Get.back();
+              return;
+            }
+            FavHttp.sortFav(
+              mediaId: _favDetailController.mediaId,
+              sort: sort.join(','),
+            ).then((res) {
+              if (res.isSuccess) {
+                SmartDialog.showToast('排序完成');
+                _favDetailController.loadingState.value = Success(sortList);
+                if (mounted) {
+                  Get.back();
                 }
-              });
-            },
-            child: const Text('完成'),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: _buildBody,
+              } else {
+                res.toast();
+              }
+            });
+          },
+        ),
+        const SizedBox(width: 16),
+      ],
+      content: (context, contentPadding) =>
+          Padding(padding: contentPadding, child: _buildBody),
     );
   }
 

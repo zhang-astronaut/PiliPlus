@@ -1,5 +1,5 @@
 import 'package:PiliPlus/common/widgets/reorder_mixin.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/http/fav.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models_new/fav/fav_folder/list.dart';
@@ -7,6 +7,7 @@ import 'package:PiliPlus/pages/fav/video/controller.dart';
 import 'package:PiliPlus/pages/fav/video/widgets/item.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class FavFolderSortPage extends StatefulWidget {
@@ -28,31 +29,30 @@ class _FavFolderSortPageState extends State<FavFolderSortPage>
 
   @override
   Widget build(BuildContext context) {
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: const Text('收藏夹排序'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              final res = await FavHttp.sortFavFolder(
-                sort: sortList.map((item) => item.id).join(','),
-              );
-              if (res.isSuccess) {
-                SmartDialog.showToast('排序完成');
-                _favController.loadingState.value = Success(sortList);
-                if (mounted) {
-                  Get.back();
-                }
-              } else {
-                res.toast();
+    return PiliMiuixPage(
+      title: '收藏夹排序',
+      actions: [
+        MiuixTextButton(
+          '完成',
+          onPressed: () async {
+            final res = await FavHttp.sortFavFolder(
+              sort: sortList.map((item) => item.id).join(','),
+            );
+            if (res.isSuccess) {
+              SmartDialog.showToast('排序完成');
+              _favController.loadingState.value = Success(sortList);
+              if (mounted) {
+                Get.back();
               }
-            },
-            child: const Text('完成'),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: _buildBody,
+            } else {
+              res.toast();
+            }
+          },
+        ),
+        const SizedBox(width: 16),
+      ],
+      content: (context, contentPadding) =>
+          Padding(padding: contentPadding, child: _buildBody),
     );
   }
 

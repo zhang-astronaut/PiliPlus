@@ -1,5 +1,5 @@
 import 'package:PiliPlus/common/widgets/pendant_avatar.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models_new/msg/im_user_infos/datum.dart';
 import 'package:PiliPlus/models_new/msg/msg_dnd/uid_setting.dart';
@@ -8,6 +8,7 @@ import 'package:PiliPlus/pages/whisper_link_setting/controller.dart';
 import 'package:PiliPlus/utils/extension/theme_ext.dart';
 import 'package:PiliPlus/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class WhisperLinkSettingPage extends StatefulWidget {
@@ -47,12 +48,11 @@ class _WhisperLinkSettingPageState extends State<WhisperLinkSettingPage> {
       indent: 16,
       color: theme.colorScheme.outline.withValues(alpha: 0.1),
     );
-    return SimpleScaffold(
-      appBar: AppBar(title: const Text('聊天设置')),
-      body: ListView(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.viewPaddingOf(context).bottom + 100,
-        ),
+    return PiliMiuixPage(
+      title: '聊天设置',
+      content: (context, contentPadding) => ListView(
+        padding: contentPadding + const EdgeInsets.only(bottom: 100),
+      
         children: [
           divider,
           Obx(
@@ -75,14 +75,9 @@ class _WhisperLinkSettingPageState extends State<WhisperLinkSettingPage> {
             },
           ),
           divider2,
-          ListTile(
-            dense: true,
-            onTap: _controller.report,
-            title: const Text('举报', style: TextStyle(fontSize: 14)),
-            trailing: Icon(
-              Icons.keyboard_arrow_right,
-              color: theme.colorScheme.outline,
-            ),
+          MiuixArrowPreference(
+            title: '举报',
+            onClick: _controller.report,
           ),
           divider,
         ],
@@ -91,18 +86,10 @@ class _WhisperLinkSettingPageState extends State<WhisperLinkSettingPage> {
   }
 
   Widget _buildBlockItem(bool isBlocked) {
-    return ListTile(
-      dense: true,
-      onTap: () => _controller.setBlock(isBlocked),
-      title: const Text('加入黑名单', style: TextStyle(fontSize: 14)),
-      trailing: Transform.scale(
-        alignment: Alignment.centerRight,
-        scale: 0.8,
-        child: Switch(
-          value: isBlocked,
-          onChanged: (value) => _controller.setBlock(isBlocked),
-        ),
-      ),
+    return MiuixSwitchPreference(
+      title: '加入黑名单',
+      value: isBlocked,
+      onChanged: (_) => _controller.setBlock(isBlocked),
     );
   }
 
@@ -179,47 +166,25 @@ class _WhisperLinkSettingPageState extends State<WhisperLinkSettingPage> {
       Loading() => const SizedBox.shrink(),
       Success(:final response) => Builder(
         builder: (context) {
-          late final subTitleS = TextStyle(
-            fontSize: 13,
-            color: theme.colorScheme.outline,
-          );
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (response.showPushSetting == 1)
-                ListTile(
-                  dense: true,
-                  onTap: () => _controller.setPush(response.pushSetting == 0),
-                  title: const Text('接收消息推送', style: TextStyle(fontSize: 14)),
-                  subtitle: Text(
-                    '若关闭此开关，你将不再收到该账号的图文消息与稿件推送，但通知类消息不受影响',
-                    style: subTitleS,
-                  ),
-                  trailing: Transform.scale(
-                    alignment: Alignment.centerRight,
-                    scale: 0.8,
-                    child: Switch(
-                      value: response.pushSetting == 0,
-                      onChanged: (value) =>
-                          _controller.setPush(response.pushSetting == 0),
-                    ),
-                  ),
+                MiuixSwitchPreference(
+                  title: '接收消息推送',
+                  summary: '若关闭此开关，你将不再收到该账号的图文消息与稿件推送，但通知类消息不受影响',
+                  value: response.pushSetting == 0,
+                  onChanged: (_) =>
+                      _controller.setPush(response.pushSetting == 0),
                 ),
               divider2,
               Obx(
-                () => ListTile(
-                  dense: true,
-                  onTap: _controller.setPin,
-                  title: const Text('置顶聊天', style: TextStyle(fontSize: 14)),
-                  trailing: Transform.scale(
-                    alignment: Alignment.centerRight,
-                    scale: 0.8,
-                    child: Switch(
-                      value: _controller.isPinned.value,
-                      onChanged: (value) => _controller.setPin(),
-                    ),
-                  ),
+                () => MiuixSwitchPreference(
+                  title: '置顶聊天',
+                  value: _controller.isPinned.value,
+                  onChanged: (_) => _controller.setPin(),
                 ),
               ),
               divider2,
@@ -238,19 +203,11 @@ class _WhisperLinkSettingPageState extends State<WhisperLinkSettingPage> {
       Loading() => const SizedBox.shrink(),
       Success(:final response) =>
         response != null && response.isNotEmpty
-            ? ListTile(
-                dense: true,
-                onTap: () => _controller.setMute(response.first.setting == 1),
-                title: const Text('消息免打扰', style: TextStyle(fontSize: 14)),
-                trailing: Transform.scale(
-                  alignment: Alignment.centerRight,
-                  scale: 0.8,
-                  child: Switch(
-                    value: response.first.setting == 1,
-                    onChanged: (value) =>
-                        _controller.setMute(response.first.setting == 1),
-                  ),
-                ),
+            ? MiuixSwitchPreference(
+                title: '消息免打扰',
+                value: response.first.setting == 1,
+                onChanged: (_) =>
+                    _controller.setMute(response.first.setting == 1),
               )
             : const SizedBox.shrink(),
       Error(:final errMsg) => _errWidget(errMsg, _controller.getMsgDnd),

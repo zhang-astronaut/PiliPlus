@@ -55,6 +55,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:material_ui/material_ui.dart' hide RefreshIndicator;
 
 List<SettingsModel> get extraSettings => [
+  const SectionModel('应用'),
   if (PlatformUtils.isDesktop) ...[
     SwitchModel(
       title: '退出时最小化',
@@ -116,6 +117,7 @@ List<SettingsModel> get extraSettings => [
       onTap: _showDynDialog,
     ),
   ),
+  const SectionModel('视频页'),
   const SwitchModel(
     title: '显示视频分段信息',
     leading: Icon(CustomIcons.view_headline_rotate_90),
@@ -171,6 +173,7 @@ List<SettingsModel> get extraSettings => [
     defaultVal: false,
     onChanged: (value) => ImageGridView.horizontalPreview = value,
   ),
+  const SectionModel('评论与弹幕'),
   NormalModel(
     title: '评论折叠行数',
     subtitle: '0行为不折叠',
@@ -280,6 +283,7 @@ List<SettingsModel> get extraSettings => [
     defaultVal: false,
     needReboot: true,
   ),
+  const SectionModel('播放增强'),
   if (kDebugMode || Platform.isAndroid)
     NormalModel(
       title: '音量均衡',

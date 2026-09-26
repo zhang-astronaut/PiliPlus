@@ -1,3 +1,4 @@
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/scroll_physics.dart' show tabBarView;
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/dynamic/dynamics_type.dart';
@@ -10,6 +11,7 @@ import 'package:PiliPlus/pages/dynamics_create/view.dart';
 import 'package:PiliPlus/pages/dynamics_tab/view.dart';
 import 'package:PiliPlus/pages/main/controller.dart';
 import 'package:PiliPlus/utils/extension/get_ext.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart' hide DraggableScrollableSheet;
 
@@ -116,6 +118,7 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
   Widget build(BuildContext context) {
     super.build(context);
     final colorScheme = ColorScheme.of(context);
+    final colors = MiuixTheme.of(context).colors;
 
     Widget? drawer;
     Widget? endDrawer;
@@ -171,35 +174,37 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
       backgroundColor: Colors.transparent,
       appBar: PreferredSize(
         preferredSize: const .fromHeight(50),
-        child: Row(
-          children: [
-            ?leading,
-            Expanded(
-              child: TabBar(
-                dividerHeight: 0,
-                isScrollable: true,
-                tabAlignment: .start,
-                dividerColor: Colors.transparent,
-                labelColor: colorScheme.primary,
-                indicatorColor: colorScheme.primary,
-                controller: _dynamicsController.tabController,
-                unselectedLabelColor: colorScheme.onSurface,
-                labelStyle:
-                    TabBarTheme.of(context).labelStyle
-                        ?.copyWith(fontSize: 13) ??
-                    const TextStyle(fontSize: 13),
-                tabs: DynamicsTabType.values
-                    .map((e) => Tab(text: e.label))
-                    .toList(),
-                onTap: (index) {
-                  if (!_dynamicsController.tabController.indexIsChanging) {
-                    _dynamicsController.animateToTop();
-                  }
-                },
+        child: BarBlur(
+          child: Row(
+            children: [
+              ?leading,
+              Expanded(
+                child: TabBar(
+                  dividerHeight: 0,
+                  isScrollable: true,
+                  tabAlignment: .start,
+                  dividerColor: Colors.transparent,
+                  labelColor: colors.primary,
+                  indicatorColor: colors.primary,
+                  controller: _dynamicsController.tabController,
+                  unselectedLabelColor: colors.onSurface,
+                  labelStyle:
+                      TabBarTheme.of(context).labelStyle
+                          ?.copyWith(fontSize: 13) ??
+                      const TextStyle(fontSize: 13),
+                  tabs: DynamicsTabType.values
+                      .map((e) => Tab(text: e.label))
+                      .toList(),
+                  onTap: (index) {
+                    if (!_dynamicsController.tabController.indexIsChanging) {
+                      _dynamicsController.animateToTop();
+                    }
+                  },
+                ),
               ),
-            ),
-            actions,
-          ],
+              actions,
+            ],
+          ),
         ),
       ),
       drawer: drawer,

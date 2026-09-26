@@ -1,9 +1,9 @@
 import 'package:PiliPlus/common/widgets/dialog/dialog.dart';
-import 'package:PiliPlus/common/widgets/flutter/list_tile.dart';
+import 'package:flutter_miuix/miuix.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:PiliPlus/utils/storage.dart';
 import 'package:PiliPlus/utils/storage_key.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:material_ui/material_ui.dart' hide ListTile;
 
 class SetSwitchItem extends StatefulWidget {
   final String title;
@@ -79,58 +79,12 @@ class _SetSwitchItemState extends State<SetSwitchItem> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final titleStyle =
-        widget.titleStyle ??
-        theme.textTheme.titleMedium!.copyWith(
-          color: widget.onTap != null && !val
-              ? theme.colorScheme.outline
-              : null,
-        );
-    final subTitleStyle = theme.textTheme.labelMedium!.copyWith(
-      color: theme.colorScheme.outline,
+    return MiuixSwitchPreference(
+      title: widget.title,
+      summary: widget.subtitle ?? '',
+      value: val,
+      onChanged: switchChange,
+      startAction: widget.leading,
     );
-
-    final switchBtn = Transform.scale(
-      scale: 0.8,
-      alignment: .centerRight,
-      child: Switch(
-        value: val,
-        onChanged: switchChange,
-      ),
-    );
-
-    Widget child(Widget? trailing) => ListTile(
-      contentPadding: widget.contentPadding,
-      enabled: widget.onTap == null ? true : val,
-      onTap: widget.onTap == null ? switchChange : () => widget.onTap!(context),
-      title: Text(widget.title, style: titleStyle),
-      subtitle: widget.subtitle != null
-          ? Text(widget.subtitle!, style: subTitleStyle)
-          : null,
-      leading: widget.leading,
-      trailing: trailing,
-    );
-
-    if (widget.isSplit) {
-      return Row(
-        children: [
-          Expanded(child: child(null)),
-          SizedBox(
-            height: 25,
-            child: VerticalDivider(
-              width: 1,
-              color: theme.colorScheme.outline.withValues(alpha: .3),
-            ),
-          ),
-          Padding(
-            padding: const .only(left: 4, right: 24),
-            child: switchBtn,
-          ),
-        ],
-      );
-    }
-
-    return child(switchBtn);
   }
 }

@@ -1,8 +1,8 @@
 import 'package:PiliPlus/common/skeleton/whisper_item.dart';
 import 'package:PiliPlus/common/sliver_single_child_delegate.dart';
 import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
 import 'package:PiliPlus/grpc/bilibili/app/im/v1.pb.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/pages/whisper/widgets/item.dart';
@@ -39,10 +39,9 @@ class _WhisperSecPageState extends State<WhisperSecPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: Text(widget.name),
-        actions: [
+    return PiliMiuixPage(
+      title: widget.name,
+      actions: [
           Obx(() {
             final threeDotItems = _controller.threeDotItems.value;
             if (threeDotItems != null && threeDotItems.isNotEmpty) {
@@ -71,11 +70,12 @@ class _WhisperSecPageState extends State<WhisperSecPage> {
             return const SizedBox.shrink();
           }),
         ],
-      ),
-      body: refreshIndicator(
+      content: (context, contentPadding) => refreshIndicator(
         onRefresh: _controller.onRefresh,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: contentPadding,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
               padding: EdgeInsets.only(
@@ -83,7 +83,8 @@ class _WhisperSecPageState extends State<WhisperSecPage> {
               ),
               sliver: Obx(() => _buildBody(_controller.loadingState.value)),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

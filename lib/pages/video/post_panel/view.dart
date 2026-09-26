@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:PiliPlus/common/widgets/button/icon_button.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/loading_widget.dart';
 import 'package:PiliPlus/common/widgets/pair.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
 import 'package:PiliPlus/common/widgets/view_insets_safe_area.dart';
 import 'package:PiliPlus/http/loading_state.dart';
@@ -22,6 +23,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class PostPanel extends CommonSlidePage {
@@ -254,12 +256,12 @@ class _PostPanelState extends State<PostPanel>
   @override
   Widget buildPage(ThemeData theme) {
     return SimpleScaffold(
-      appBar: SizedBox(
+      appBar: BarBlur(child: SizedBox(
         height: 45,
         child: Row(
           children: [
             const SizedBox(width: 16),
-            const Expanded(child: Text('提交片段', style: TextStyle(fontSize: 16))),
+            const Expanded(child: MiuixText('提交片段')),
             iconButton(
               size: 32,
               context: context,
@@ -289,8 +291,9 @@ class _PostPanelState extends State<PostPanel>
               onPressed: Get.back,
               icon: const Icon(Icons.close),
             ),
-            const SizedBox(width: 16),
-          ],
+              const SizedBox(width: 16),
+            ],
+          ),
         ),
       ),
       body: enableSlide ? slideList(theme) : buildList(theme),

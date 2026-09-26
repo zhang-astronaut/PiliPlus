@@ -23,6 +23,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:material_ui/material_ui.dart';
 
 List<SettingsModel> get videoSettings => [
+  const SectionModel('播放能力'),
   const SwitchModel(
     title: '开启硬解',
     subtitle: '以较低功耗播放视频，若异常卡死请关闭',
@@ -55,6 +56,7 @@ List<SettingsModel> get videoSettings => [
       ),
     ),
   ),
+  const SectionModel('CDN'),
   NormalModel(
     title: 'CDN 设置',
     leading: const Icon(MdiIcons.cloudPlusOutline),
@@ -83,6 +85,7 @@ List<SettingsModel> get videoSettings => [
     defaultVal: false,
     onChanged: (value) => VideoUtils.disableAudioCDN = value,
   ),
+  const SectionModel('画质与音质'),
   NormalModel(
     title: '默认画质',
     leading: const Icon(Icons.video_settings_outlined),
@@ -124,6 +127,7 @@ List<SettingsModel> get videoSettings => [
         '当前画质：${LiveQuality.fromCode(Pref.liveQualityCellular)?.desc}',
     onTap: _showLiveCellularQaDialog,
   ),
+  const SectionModel('解码与输出'),
   NormalModel(
     title: '首选解码格式',
     leading: const Icon(Icons.movie_creation_outlined),
@@ -145,6 +149,7 @@ List<SettingsModel> get videoSettings => [
       getSubtitle: () => '当前：${Pref.audioOutput}',
       onTap: _showAudioOutputDialog,
     ),
+  const SectionModel('缓冲与同步'),
   NormalModel(
     title: '缓冲大小',
     leading: const Icon(Icons.storage_outlined),

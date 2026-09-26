@@ -1,3 +1,4 @@
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/appbar/appbar.dart';
 import 'package:PiliPlus/common/widgets/flutter/pop_scope.dart';
 import 'package:PiliPlus/common/widgets/gesture/horizontal_drag_gesture_recognizer.dart';
@@ -74,7 +75,7 @@ class _LaterPageState extends State<LaterPage>
             }
           },
           child: SimpleScaffold(
-            appBar: _buildAppbar(enableMultiSelect),
+            appBar: BarBlur(child: _buildAppbar(enableMultiSelect)),
             fab: Padding(
               padding: .only(
                 right: kFloatingActionButtonMargin + padding.right,

@@ -1,5 +1,6 @@
 import 'package:PiliPlus/pages/setting/widgets/checkbox_num_list_tile.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -77,21 +78,19 @@ class _OrderedMultiSelectDialogState<T>
       ),
       actionsPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
       actions: [
-        TextButton(
+        MiuixTextButton(
+          '取消',
           onPressed: Get.back,
-          child: Text(
-            '取消',
-            style: TextStyle(
-              color: theme.colorScheme.outline,
-            ),
+          textStyle: TextStyle(
+            color: MiuixTheme.of(context).colors.onSurfaceVariantSummary,
           ),
         ),
-        TextButton(
+        MiuixTextButton(
+          '确定',
           onPressed: () {
             assert(_tempValues.values.isSorted(Comparable.compare));
             Get.back(result: _tempValues.keys.toList());
           },
-          child: const Text('确定'),
         ),
       ],
     );

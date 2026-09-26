@@ -1,6 +1,4 @@
-import 'package:PiliPlus/common/widgets/flutter/list_tile.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
-import 'package:PiliPlus/common/widgets/view_safe_area.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/http/login.dart';
 import 'package:PiliPlus/models/common/setting_type.dart';
 import 'package:PiliPlus/pages/about/view.dart';
@@ -12,15 +10,16 @@ import 'package:PiliPlus/utils/accounts.dart';
 import 'package:PiliPlus/utils/accounts/account.dart';
 import 'package:PiliPlus/utils/extension/size_ext.dart';
 import 'package:PiliPlus/utils/utils.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:material_ui/material_ui.dart' hide ListTile;
+import 'package:material_ui/material_ui.dart';
 
 class _SettingsModel {
   final SettingType type;
   final String? subtitle;
-  final Icon icon;
+  final IconData icon;
 
   const _SettingsModel({
     required this.type,
@@ -40,76 +39,71 @@ class _SettingPageState extends State<SettingPage> {
   late SettingType _type = SettingType.privacySetting;
   final RxBool _noAccount = Accounts.account.isEmpty.obs;
   late bool _isPortrait;
-  late ThemeData theme;
 
   static const List<_SettingsModel> _items = [
     _SettingsModel(
       type: SettingType.privacySetting,
       subtitle: '黑名单',
-      icon: Icon(Icons.privacy_tip_outlined),
+      icon: Icons.privacy_tip_outlined,
     ),
     _SettingsModel(
       type: SettingType.recommendSetting,
       subtitle: '推荐来源（web/app）、刷新保留内容、过滤器',
-      icon: Icon(Icons.explore_outlined),
+      icon: Icons.explore_outlined,
     ),
     _SettingsModel(
       type: SettingType.videoSetting,
       subtitle: '画质、音质、解码、缓冲、音频输出等',
-      icon: Icon(Icons.video_settings_outlined),
+      icon: Icons.video_settings_outlined,
     ),
     _SettingsModel(
       type: SettingType.playSetting,
       subtitle: '双击/长按、全屏、后台播放、弹幕、字幕、底部进度条等',
-      icon: Icon(Icons.touch_app_outlined),
+      icon: Icons.touch_app_outlined,
     ),
     _SettingsModel(
       type: SettingType.styleSetting,
       subtitle: '横屏适配（平板）、侧栏、列宽、首页、动态红点、主题、字号、图片、帧率等',
-      icon: Icon(Icons.style_outlined),
+      icon: Icons.style_outlined,
     ),
     _SettingsModel(
       type: SettingType.extraSetting,
       subtitle: '震动、搜索、收藏、ai、评论、动态、代理、更新检查等',
-      icon: Icon(Icons.extension_outlined),
+      icon: Icons.extension_outlined,
     ),
     _SettingsModel(
       type: SettingType.webdavSetting,
-      icon: Icon(MdiIcons.databaseCogOutline),
+      icon: MdiIcons.databaseCogOutline,
     ),
     _SettingsModel(
       type: SettingType.about,
-      icon: Icon(Icons.info_outline),
+      icon: Icons.info_outline,
     ),
   ];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    theme = Theme.of(context);
     _isPortrait = MediaQuery.sizeOf(context).isPortrait;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: _isPortrait ? const Text('设置') : Text(_type.title),
-      ),
-      body: ViewSafeArea(
-        child: _isPortrait
-            ? _buildList(theme)
-            : Row(
+    return PiliMiuixPage(
+      title: _isPortrait ? '设置' : _type.title,
+      content: (context, padding) => _isPortrait
+          ? Padding(padding: padding, child: _buildList(context))
+          : Padding(
+              padding: padding,
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    flex: 4,
-                    child: _buildList(theme),
-                  ),
+                  Expanded(flex: 4, child: _buildList(context)),
                   VerticalDivider(
                     width: 1,
-                    color: theme.colorScheme.outline.withValues(alpha: 0.1),
+                    color: MiuixTheme.of(
+                      context,
+                    ).colors.dividerLine.withValues(alpha: 0.1),
                   ),
                   Expanded(
                     flex: 6,
@@ -131,7 +125,7 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ],
               ),
-      ),
+            ),
     );
   }
 
@@ -161,56 +155,71 @@ class _SettingPageState extends State<SettingPage> {
     }
   }
 
-  Color? _getTileColor(ThemeData theme, SettingType type) {
-    if (_isPortrait) {
-      return null;
-    } else {
-      return type == _type ? theme.colorScheme.onInverseSurface : null;
-    }
+  MiuixBasicComponentColors? _titleColor(SettingType type) {
+    if (_isPortrait || type != _type) return null;
+    final colors = MiuixTheme.of(context).colors;
+    return MiuixBasicComponentColors(
+      color: colors.primary,
+      disabledColor: colors.disabledOnSecondaryVariant,
+    );
   }
 
-  Widget _buildList(ThemeData theme) {
-    final padding = MediaQuery.viewPaddingOf(context);
-    TextStyle titleStyle = theme.textTheme.titleMedium!;
-    TextStyle subTitleStyle = theme.textTheme.labelMedium!.copyWith(
-      color: theme.colorScheme.outline,
-    );
+  Widget _buildList(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.only(bottom: padding.bottom + 100),
+      padding: const EdgeInsets.only(bottom: 100, left: 12, right: 12),
       children: [
-        _buildSearchItem(theme),
-        ..._items
-            .take(_items.length - 1)
-            .map(
-              (item) => ListTile(
-                tileColor: _getTileColor(theme, item.type),
-                onTap: () => _toPage(item.type),
-                leading: item.icon,
-                title: Text(item.type.title, style: titleStyle),
-                subtitle: item.subtitle == null
-                    ? null
-                    : Text(item.subtitle!, style: subTitleStyle),
-              ),
-            ),
-        ListTile(
-          onTap: () => LoginPageController.switchAccountDialog(context),
-          leading: const Icon(Icons.switch_account_outlined),
-          title: Text('切换账号', style: titleStyle),
-        ),
-        Obx(
-          () => _noAccount.value
-              ? const SizedBox.shrink()
-              : ListTile(
-                  leading: const Icon(Icons.logout_outlined),
-                  onTap: () => _logoutDialog(context),
-                  title: Text('退出登录', style: titleStyle),
+        _buildSearchItem(context),
+        MiuixCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ..._items.take(_items.length - 1).map(
+                (item) => MiuixArrowPreference(
+                  title: item.type.title,
+                  summary: item.subtitle,
+                  titleColor: _titleColor(item.type),
+                  startAction: MiuixIcon(icon: item.icon, size: 22),
+                  onClick: () => _toPage(item.type),
                 ),
+              ),
+            ],
+          ),
         ),
-        ListTile(
-          tileColor: _getTileColor(theme, _items.last.type),
-          onTap: () => _toPage(_items.last.type),
-          leading: _items.last.icon,
-          title: Text(_items.last.type.title, style: titleStyle),
+        const SizedBox(height: 12),
+        MiuixCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              MiuixArrowPreference(
+                title: '切换账号',
+                startAction: const MiuixIcon(
+                  icon: Icons.switch_account_outlined,
+                  size: 22,
+                ),
+                onClick: () => LoginPageController.switchAccountDialog(context),
+              ),
+              Obx(
+                () => _noAccount.value
+                    ? const SizedBox.shrink()
+                    : MiuixArrowPreference(
+                        title: '退出登录',
+                        startAction: const MiuixIcon(
+                          icon: Icons.logout_outlined,
+                          size: 22,
+                        ),
+                        onClick: () => _logoutDialog(context),
+                      ),
+              ),
+              MiuixArrowPreference(
+                title: _items.last.type.title,
+                titleColor: _titleColor(_items.last.type),
+                startAction: MiuixIcon(icon: _items.last.icon, size: 22),
+                onClick: () => _toPage(_items.last.type),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -247,30 +256,27 @@ class _SettingPageState extends State<SettingPage> {
     showDialog(
       context: context,
       builder: (context) {
+        final colors = MiuixTheme.of(context).colors;
         return AlertDialog(
           title: const Text('提示'),
           content: Text(
             "确认要退出以下账号登录吗\n\n${result.map((i) => i.mid).join('\n')}",
           ),
           actions: [
-            TextButton(
+            MiuixTextButton(
+              '点错了',
               onPressed: Get.back,
-              child: Text(
-                '点错了',
-                style: TextStyle(color: theme.colorScheme.outline),
-              ),
+              textStyle: TextStyle(color: colors.onSurfaceVariantSummary),
             ),
-            TextButton(
+            MiuixTextButton(
+              '仅登出',
               onPressed: () {
                 Get.back();
                 _removeAccounts(result);
               },
-              child: Text(
-                '仅登出',
-                style: TextStyle(color: theme.colorScheme.error),
-              ),
+              textStyle: TextStyle(color: colors.error),
             ),
-            TextButton(
+            MiuixButton(
               onPressed: () async {
                 SmartDialog.showLoading();
                 final res = await Future.wait(result.map(_logoutWrapper));
@@ -289,7 +295,7 @@ class _SettingPageState extends State<SettingPage> {
                   }
                 }
               },
-              child: const Text('确认'),
+              child: const MiuixText('确认'),
             ),
           ],
         );
@@ -297,37 +303,19 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Widget _buildSearchItem(ThemeData theme) => Padding(
-    padding: const EdgeInsets.only(
-      left: 16,
-      right: 16,
-      bottom: 8,
-    ),
-    child: Material(
-      color: theme.colorScheme.onInverseSurface,
-      borderRadius: const BorderRadius.all(Radius.circular(50)),
-      child: InkWell(
-        onTap: () => Get.toNamed('/settingsSearch'),
-        borderRadius: const BorderRadius.all(Radius.circular(50)),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  size: 18,
-                  applyTextScaling: true,
-                  Icons.search,
-                ),
-                Text(
-                  ' 搜索',
-                  style: TextStyle(height: 1),
-                  strutStyle: StrutStyle(height: 1, leading: 0),
-                ),
-              ],
-            ),
-          ),
+  Widget _buildSearchItem(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: MiuixCard(
+      onPressed: () => Get.toNamed('/settingsSearch'),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            MiuixIcon(vector: MiuixIcons.basic.search, size: 18),
+            const SizedBox(width: 6),
+            const MiuixText('搜索'),
+          ],
         ),
       ),
     ),

@@ -1026,7 +1026,16 @@ abstract final class Pref {
       _setting.get(SettingBoxKey.saveReply, defaultValue: true);
 
   static bool get floatingNavBar =>
-      _setting.get(SettingBoxKey.floatingNavBar, defaultValue: false);
+      _setting.get(SettingBoxKey.floatingNavBar, defaultValue: true);
+
+  static bool get barBlur =>
+      _setting.get(SettingBoxKey.barBlur, defaultValue: true);
+
+  static bool get liquidGlass =>
+      _setting.get(SettingBoxKey.liquidGlass, defaultValue: true);
+
+  static bool get predictiveBack =>
+      _setting.get(SettingBoxKey.predictiveBack, defaultValue: true);
 
   static bool get removeSafeArea =>
       _setting.get(SettingBoxKey.removeSafeArea, defaultValue: false);

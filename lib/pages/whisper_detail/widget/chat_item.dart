@@ -24,6 +24,7 @@ import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ChatItem extends StatelessWidget {
@@ -62,9 +63,10 @@ class ChatItem extends StatelessWidget {
     // }
 
     late final ThemeData theme = Theme.of(context);
+    final miuix = MiuixTheme.of(context).colors;
     late final Color textColor = isOwner
-        ? theme.colorScheme.onSecondaryContainer
-        : theme.colorScheme.onSurface;
+        ? miuix.onSecondaryContainer
+        : miuix.onSurface;
     late final dynamic content = jsonDecode(item.content);
 
     Widget child = messageContent(
@@ -90,8 +92,8 @@ class ChatItem extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 300.0),
             decoration: BoxDecoration(
               color: isOwner
-                  ? theme.colorScheme.secondaryContainer
-                  : theme.colorScheme.onInverseSurface,
+                  ? miuix.secondaryContainer
+                  : miuix.surfaceContainer,
               borderRadius: isOwner
                   ? const .only(
                       topLeft: .circular(16),

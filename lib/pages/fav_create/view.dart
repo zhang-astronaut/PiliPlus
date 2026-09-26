@@ -3,7 +3,7 @@ import 'dart:io' show File;
 import 'package:PiliPlus/common/widgets/dialog/simple_dialog_option.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/loading_widget.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/view_insets_safe_area.dart';
 import 'package:PiliPlus/http/fav.dart';
 import 'package:PiliPlus/http/loading_state.dart';
@@ -18,6 +18,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class CreateFavPage extends StatefulWidget {
@@ -74,46 +75,47 @@ class _CreateFavPageState extends State<CreateFavPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: Text(_mediaId != null ? '编辑' : '创建'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (_titleController.text.isEmpty) {
-                SmartDialog.showToast('名称不能为空');
-                return;
-              }
-              FavHttp.addOrEditFolder(
-                isAdd: _mediaId == null,
-                mediaId: _mediaId,
-                title: _titleController.text,
-                privacy: _isPublic ? 0 : 1,
-                cover: _cover ?? '',
-                intro: _introController.text,
-              ).then((res) {
-                if (res case Success(:final response)) {
-                  SmartDialog.showToast('${_mediaId != null ? '编辑' : '创建'}成功');
-                  if (mounted) {
-                    Get.back(result: response);
-                  }
-                } else {
-                  res.toast();
+    return PiliMiuixPage(
+      title: _mediaId != null ? '编辑' : '创建',
+      actions: [
+        MiuixTextButton(
+          '完成',
+          onPressed: () {
+            if (_titleController.text.isEmpty) {
+              SmartDialog.showToast('名称不能为空');
+              return;
+            }
+            FavHttp.addOrEditFolder(
+              isAdd: _mediaId == null,
+              mediaId: _mediaId,
+              title: _titleController.text,
+              privacy: _isPublic ? 0 : 1,
+              cover: _cover ?? '',
+              intro: _introController.text,
+            ).then((res) {
+              if (res case Success(:final response)) {
+                SmartDialog.showToast('${_mediaId != null ? '编辑' : '创建'}成功');
+                if (mounted) {
+                  Get.back(result: response);
                 }
-              });
-            },
-            child: const Text('完成'),
-          ),
-          const SizedBox(width: 16),
-        ],
+              } else {
+                res.toast();
+              }
+            });
+          },
+        ),
+        const SizedBox(width: 16),
+      ],
+      content: (context, contentPadding) => Padding(
+        padding: contentPadding,
+        child: _mediaId != null
+            ? _titleController.text.isNotEmpty
+                  ? _buildBody(theme)
+                  : _errMsg?.isNotEmpty == true
+                  ? scrollErrorWidget(errMsg: _errMsg, onReload: _getFolderInfo)
+                  : m3eLoading
+            : _buildBody(theme),
       ),
-      body: _mediaId != null
-          ? _titleController.text.isNotEmpty
-                ? _buildBody(theme)
-                : _errMsg?.isNotEmpty == true
-                ? scrollErrorWidget(errMsg: _errMsg, onReload: _getFolderInfo)
-                : m3eLoading
-          : _buildBody(theme),
     );
   }
 

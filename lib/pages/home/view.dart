@@ -1,4 +1,5 @@
 import 'package:PiliPlus/common/style.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/custom_height_widget.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/common/widgets/scroll_physics.dart' show tabBarView;
@@ -9,6 +10,7 @@ import 'package:PiliPlus/pages/mine/controller.dart';
 import 'package:PiliPlus/utils/extension/get_ext.dart';
 import 'package:PiliPlus/utils/extension/size_ext.dart';
 import 'package:PiliPlus/utils/feed_back.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:material_ui/material_ui.dart';
@@ -79,7 +81,7 @@ class _HomePageState extends CommonPageState<HomePage>
       children: [
         if (!_mainController.useSideBar &&
             MediaQuery.sizeOf(context).isPortrait)
-          customAppBar(),
+          BarBlur(child: customAppBar()),
         tabBar,
         Expanded(
           child: onBuild(
@@ -146,15 +148,16 @@ class _HomePageState extends CommonPageState<HomePage>
 
   Widget searchBar() {
     const borderRadius = BorderRadius.all(Radius.circular(25));
+    final colors = MiuixTheme.of(context).colors;
     return Expanded(
       child: SizedBox(
         height: 44,
         child: Material(
           borderRadius: borderRadius,
-          color: _colorScheme.onSecondaryContainer.withValues(alpha: 0.05),
+          color: colors.surfaceContainer,
           child: InkWell(
             borderRadius: borderRadius,
-            splashColor: _colorScheme.primaryContainer.withValues(
+            splashColor: colors.primaryContainer.withValues(
               alpha: 0.3,
             ),
             onTap: () => Get.toNamed(
@@ -166,19 +169,19 @@ class _HomePageState extends CommonPageState<HomePage>
             child: Row(
               children: [
                 const SizedBox(width: 14),
-                Icon(
-                  Icons.search_outlined,
-                  color: _colorScheme.onSecondaryContainer,
-                  semanticLabel: '搜索',
+                MiuixIcon(
+                  icon: Icons.search_outlined,
+                  tint: colors.onSurfaceVariantSummary,
+                  contentDescription: '搜索',
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Obx(
-                    () => Text(
+                    () => MiuixText(
                       _homeController.defaultSearch.value,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: _colorScheme.outline),
+                      color: colors.onSurfaceVariantSummary,
                     ),
                   ),
                 ),

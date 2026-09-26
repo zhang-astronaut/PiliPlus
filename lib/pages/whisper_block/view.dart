@@ -1,7 +1,7 @@
 import 'package:PiliPlus/common/assets.dart';
 import 'package:PiliPlus/common/widgets/dialog/dialog.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/loading_widget.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/view_insets_safe_area.dart';
 import 'package:PiliPlus/grpc/bilibili/app/im/v1.pb.dart'
     show KeywordBlockingItem;
@@ -28,9 +28,12 @@ class _WhisperBlockPageState extends State<WhisperBlockPage> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return SimpleScaffold(
-      appBar: AppBar(title: const Text('消息屏蔽词')),
-      body: Obx(() => _buildBody(theme, _controller.loadingState.value)),
+    return PiliMiuixPage(
+      title: '消息屏蔽词',
+      content: (context, contentPadding) => Padding(
+        padding: contentPadding,
+        child: Obx(() => _buildBody(theme, _controller.loadingState.value)),
+      ),
     );
   }
 

@@ -1,5 +1,5 @@
-import 'package:PiliPlus/common/widgets/flutter/list_tile.dart';
-import 'package:material_ui/material_ui.dart' hide ListTile;
+import 'package:flutter_miuix/miuix.dart';
+import 'package:material_ui/material_ui.dart';
 
 class NormalItem extends StatefulWidget {
   final String? title;
@@ -32,34 +32,27 @@ class NormalItem extends StatefulWidget {
 class _NormalItemState extends State<NormalItem> {
   @override
   Widget build(BuildContext context) {
-    late final theme = Theme.of(context);
-    Widget? subtitle;
-    if ((widget.subtitle ?? widget.getSubtitle?.call()) case final text?) {
-      subtitle = Text(
-        text,
-        style: theme.textTheme.labelMedium!.copyWith(
-          color: theme.colorScheme.outline,
-        ),
-      );
-    }
-    return ListTile(
-      contentPadding: widget.contentPadding,
-      onTap: widget.onTap == null
+    final trailing = widget.getTrailing?.call(Theme.of(context));
+    return MiuixBasicComponent(
+      title: widget.title ?? widget.getTitle!(),
+      summary: widget.subtitle ?? widget.getSubtitle?.call() ?? '',
+      startAction: widget.leading,
+      endActions: [
+        if (trailing != null) trailing,
+        if (widget.onTap != null)
+          Icon(
+            Icons.chevron_right,
+            size: 18,
+            color: MiuixTheme.of(context).colors.onSurfaceVariantSummary,
+          ),
+      ],
+      onClick: widget.onTap == null
           ? null
           : () => widget.onTap!(context, refresh),
-      title: Text(
-        widget.title ?? widget.getTitle!(),
-        style: widget.titleStyle ?? theme.textTheme.titleMedium!,
-      ),
-      subtitle: subtitle,
-      leading: widget.leading,
-      trailing: widget.getTrailing?.call(theme),
     );
   }
 
   void refresh() {
-    if (mounted) {
-      setState(() {});
-    }
+    if (mounted) setState(() {});
   }
 }

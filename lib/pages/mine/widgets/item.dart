@@ -1,6 +1,7 @@
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/models_new/fav/fav_folder/list.dart';
 import 'package:PiliPlus/utils/bili_utils.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -19,6 +20,7 @@ class FavFolderItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = MiuixTheme.of(context).colors;
     return GestureDetector(
       onTap: () {
         Get.toNamed(
@@ -58,16 +60,15 @@ class FavFolderItem extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          MiuixText(
             ' ${item.title}',
             overflow: TextOverflow.fade,
             maxLines: 1,
           ),
-          Text(
+          MiuixText(
             ' 共${item.mediaCount}条视频 · ${BiliUtils.isPublicFavText(item.attr)}',
-            style: theme.textTheme.labelSmall!.copyWith(
-              color: theme.colorScheme.outline,
-            ),
+            fontSize: theme.textTheme.labelSmall!.fontSize,
+            color: colors.onSurfaceVariantSummary,
           ),
         ],
       ),

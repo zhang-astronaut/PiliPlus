@@ -1,6 +1,6 @@
 import 'package:PiliPlus/common/widgets/dialog/simple_dialog_option.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/loading_widget.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/grpc/bilibili/app/im/v1.pb.dart'
     show IMSettingType, Setting;
 import 'package:PiliPlus/http/loading_state.dart';
@@ -40,11 +40,12 @@ class _WhisperSettingsPageState extends State<WhisperSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return SimpleScaffold(
-      appBar: AppBar(
-        title: Obx(() => Text(_controller.title.value)),
+    return PiliMiuixPage(
+      title: _controller.title.value,
+      content: (context, contentPadding) => Padding(
+        padding: contentPadding,
+        child: Obx(() => _buildBody(theme, _controller.loadingState.value)),
       ),
-      body: Obx(() => _buildBody(theme, _controller.loadingState.value)),
     );
   }
 

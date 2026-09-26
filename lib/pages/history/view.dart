@@ -1,3 +1,4 @@
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/appbar/appbar.dart';
 import 'package:PiliPlus/common/widgets/flutter/pop_scope.dart';
 import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
@@ -94,10 +95,11 @@ class _HistoryPageState extends State<HistoryPage>
             }
           },
           child: SimpleScaffold(
-            appBar: MultiSelectAppBarWidget(
+            appBar: BarBlur(child: MultiSelectAppBarWidget(
               visible: enableMultiSelect,
               ctr: currCtr(),
               child: _buildAppBar,
+            ),
             ),
             body: Padding(
               padding: .only(left: padding.left, right: padding.right),

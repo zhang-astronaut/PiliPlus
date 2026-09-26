@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:PiliPlus/grpc/bilibili/app/im/v1.pb.dart'
     show SelectItem, Setting, SettingSwitch;
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ImSettingsItem extends StatelessWidget {
@@ -24,10 +25,8 @@ class ImSettingsItem extends StatelessWidget {
       }
     }
 
-    const titleStyle = TextStyle(fontSize: 14);
     final colorScheme = ColorScheme.of(context);
     final outline = colorScheme.outline;
-    final subtitleStyle = TextStyle(fontSize: 13, color: outline);
 
     if (item.hasSwitch_1()) {
       Future<void> onChanged() async {
@@ -39,24 +38,11 @@ class ImSettingsItem extends StatelessWidget {
         }
       }
 
-      return ListTile(
-        dense: true,
-        onTap: onChanged,
-        title: Text(
-          item.switch_1.title,
-          style: titleStyle,
-        ),
-        subtitle: item.switch_1.hasSubtitle()
-            ? Text(item.switch_1.subtitle, style: subtitleStyle)
-            : null,
-        trailing: Transform.scale(
-          alignment: Alignment.centerRight,
-          scale: 0.8,
-          child: Switch(
-            value: item.switch_1.switchOn,
-            onChanged: (value) => onChanged(),
-          ),
-        ),
+      return MiuixSwitchPreference(
+        title: item.switch_1.title,
+        summary: item.switch_1.hasSubtitle() ? item.switch_1.subtitle : '',
+        value: item.switch_1.switchOn,
+        onChanged: (_) => onChanged(),
       );
     }
 
@@ -80,37 +66,24 @@ class ImSettingsItem extends StatelessWidget {
           }
         }
       }
-      return ListTile(
-        dense: true,
-        onTap: onRedirect,
-        title: Text(
-          item.redirect.title,
-          style: titleStyle,
-        ),
-        subtitle: item.redirect.hasSubtitle()
-            ? Text(item.redirect.subtitle, style: subtitleStyle)
-            : null,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (selected != null)
-              Text(
-                selected.text,
-                style: TextStyle(fontSize: 13, color: outline),
-              )
-            else if (sw1tch != null)
-              Text(
-                sw1tch.title,
-                style: TextStyle(fontSize: 13, color: outline),
-              )
-            else if (item.redirect.hasSelectedSummary())
-              Text(
-                item.redirect.selectedSummary,
-                style: TextStyle(fontSize: 13, color: outline),
-              ),
-            Icon(color: outline, Icons.keyboard_arrow_right),
-          ],
-        ),
+      final summaryText = selected?.text ??
+          sw1tch?.title ??
+          (item.redirect.hasSelectedSummary()
+              ? item.redirect.selectedSummary
+              : '');
+      return MiuixArrowPreference(
+        title: item.redirect.title,
+        summary: item.redirect.hasSubtitle()
+            ? item.redirect.subtitle
+            : summaryText,
+        endActions: [
+          if (summaryText.isNotEmpty)
+            Text(
+              summaryText,
+              style: TextStyle(fontSize: 13, color: outline),
+            ),
+        ],
+        onClick: onRedirect,
       );
     }
 
@@ -134,9 +107,17 @@ class ImSettingsItem extends StatelessWidget {
             if (e.selected) {
               selected ??= e.text;
             }
-            return ListTile(
-              dense: true,
-              onTap: () async {
+            return MiuixBasicComponent(
+              title: e.text,
+              endActions: [
+                if (e.selected)
+                  MiuixIcon(
+                    icon: Icons.check,
+                    size: 20,
+                    tint: colorScheme.primary,
+                  ),
+              ],
+              onClick: () async {
                 if (!e.selected) {
                   for (final i in item.select.item) {
                     i.selected = false;
@@ -154,10 +135,6 @@ class ImSettingsItem extends StatelessWidget {
                   }
                 }
               },
-              title: Text(e.text, style: titleStyle),
-              trailing: e.selected
-                  ? Icon(size: 20, Icons.check, color: colorScheme.primary)
-                  : null,
             );
           },
         ),

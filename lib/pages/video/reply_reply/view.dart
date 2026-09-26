@@ -5,7 +5,7 @@ import 'package:PiliPlus/common/widgets/colored_box_transition.dart';
 import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
 import 'package:PiliPlus/common/widgets/scaffold/mini_scaffold.dart';
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/simple_colored_box.dart';
 import 'package:PiliPlus/common/widgets/sliver/sliver_pinned_header.dart';
 import 'package:PiliPlus/common/widgets/view_safe_area.dart';
@@ -24,6 +24,7 @@ import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:fixnum/fixnum.dart' show Int64;
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -70,30 +71,30 @@ class VideoReplyReplyPanel extends CommonSlidePage {
         'type': type,
         'enterUri': ?uri?.toString(), // save panel
       },
-      () => SimpleScaffold(
-        appBar: AppBar(
-          title: const Text('评论详情'),
-          actions: [
-            IconButton(
-              tooltip: '前往',
-              onPressed: uri == null
-                  ? null
-                  : () => PiliScheme.routePush(uri, businessId: type),
-              icon: const Icon(Icons.open_in_browser),
-            ),
-          ],
-        ),
-        body: ViewSafeArea(
-          child: VideoReplyReplyPanel(
-            enableSlide: false,
-            oid: oid,
-            rpid: rootId,
-            isVideoDetail: false,
-            replyType: type,
-            firstFloor: null,
-            id: rpId,
+      () => PiliMiuixPage(
+        title: '评论详情',
+        actions: [
+          MiuixIconButton(
+            onPressed: uri == null
+                ? null
+                : () => PiliScheme.routePush(uri, businessId: type),
+            child: const MiuixIcon(icon: Icons.open_in_browser),
           ),
-        ).constraintWidth(),
+        ],
+        content: (context, contentPadding) => Padding(
+          padding: contentPadding,
+          child: ViewSafeArea(
+            child: VideoReplyReplyPanel(
+              enableSlide: false,
+              oid: oid,
+              rpid: rootId,
+              isVideoDetail: false,
+              replyType: type,
+              firstFloor: null,
+              id: rpId,
+            ),
+          ).constraintWidth(),
+        ),
       ),
     );
   }

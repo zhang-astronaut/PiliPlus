@@ -125,8 +125,9 @@ class _RenderScaffoldLayout extends RenderBox
       }
     }
 
-    doPaint(appBar);
+    // Paint body first so app-bar BackdropFilter can sample content underneath.
     doPaint(body);
+    doPaint(appBar);
     doPaint(fab);
   }
 }

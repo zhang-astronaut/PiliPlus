@@ -1,3 +1,4 @@
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -64,18 +65,16 @@ class _MultiSelectDialogState<T> extends State<MultiSelectDialog<T>> {
       ),
       actionsPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
       actions: [
-        TextButton(
+        MiuixTextButton(
+          '取消',
           onPressed: Get.back,
-          child: Text(
-            '取消',
-            style: TextStyle(
-              color: theme.colorScheme.outline,
-            ),
+          textStyle: TextStyle(
+            color: MiuixTheme.of(context).colors.onSurfaceVariantSummary,
           ),
         ),
-        TextButton(
+        MiuixTextButton(
+          '确定',
           onPressed: () => Get.back(result: _tempValues),
-          child: const Text('确定'),
         ),
       ],
     );

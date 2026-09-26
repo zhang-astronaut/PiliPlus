@@ -76,7 +76,7 @@ dependencies:
   dio: ^5.9.1
   dio_http2_adapter: ^2.7.1
   dlna_dart: ^0.1.0
-  dynamic_color: ^2.1.0
+  dynamic_color: ^1.9.0
   easy_debounce: ^2.0.3
   encrypt: ^5.0.3
   extended_nested_scroll_view:
@@ -102,6 +102,7 @@ dependencies:
     git:
       url: https://github.com/bggRGjQaUbCoE/flutter_sortable_wrap.git
       ref: master
+  flutter_miuix: ^1.2.0
   flutter_svg: ^2.0.14
   flutter_volume_controller: ^2.0.0
   font_awesome_flutter:
@@ -175,6 +176,7 @@ dependencies:
       ref: main
 
 dependency_overrides:
+  dynamic_color: ^1.9.0
   flutter_inappwebview_android:
     git:
       url: https://github.com/bggRGjQaUbCoE/flutter_inappwebview.git

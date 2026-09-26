@@ -1,3 +1,4 @@
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
 import 'package:PiliPlus/common/widgets/scroll_physics.dart' show tabBarView;
 import 'package:PiliPlus/common/widgets/view_safe_area.dart';
@@ -53,7 +54,7 @@ class _FavPageState extends State<FavPage> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return SimpleScaffold(
-      appBar: AppBar(
+      appBar: BarBlur(child: AppBar(
         title: const Text('我的收藏'),
         actions: [
           Obx(
@@ -126,6 +127,7 @@ class _FavPageState extends State<FavPage> with SingleTickerProviderStateMixin {
           ),
           const SizedBox(width: 6),
         ],
+      ),
       ),
       body: ViewSafeArea(
         child: Column(

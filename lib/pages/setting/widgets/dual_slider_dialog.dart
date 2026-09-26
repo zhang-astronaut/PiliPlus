@@ -1,4 +1,5 @@
 import 'package:PiliPlus/utils/extension/num_ext.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DualSliderDialog extends StatefulWidget {
@@ -92,16 +93,16 @@ class _DualSliderDialogState extends State<DualSliderDialog> {
         ],
       ),
       actions: [
-        TextButton(
+        MiuixTextButton(
+          '取消',
           onPressed: Navigator.of(context).pop,
-          child: Text(
-            '取消',
-            style: TextStyle(color: Theme.of(context).colorScheme.outline),
+          textStyle: TextStyle(
+            color: MiuixTheme.of(context).colors.onSurfaceVariantSummary,
           ),
         ),
-        TextButton(
+        MiuixTextButton(
+          '确定',
           onPressed: () => Navigator.pop(context, (_tempValue1, _tempValue2)),
-          child: const Text('确定'),
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/common/widgets/dialog/export_import.dart';
 import 'package:PiliPlus/common/widgets/disabled_icon.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
@@ -16,6 +17,7 @@ import 'package:PiliPlus/utils/extension/size_ext.dart';
 import 'package:PiliPlus/utils/storage.dart';
 import 'package:PiliPlus/utils/storage_key.dart';
 import 'package:PiliPlus/utils/utils.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -85,51 +87,56 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  PreferredSizeWidget get _buildAppBar => AppBar(
-    shape: Border(
-      bottom: BorderSide(
-        color: theme.dividerColor.withValues(alpha: 0.08),
-        width: 1,
+  Widget get _buildAppBar {
+    final colors = MiuixTheme.of(context).colors;
+    return BarBlur(
+      child: AppBar(
+        shape: Border(
+          bottom: BorderSide(
+            color: colors.dividerLine.withValues(alpha: 0.08),
+            width: 1,
+          ),
+        ),
+        actions: [
+          Obx(
+            () => _searchController.showUidBtn.value
+                ? IconButton(
+                    tooltip: 'UID搜索用户',
+                    icon: const Icon(Icons.person_outline, size: 22),
+                    onPressed: () => Get.toNamed(
+                      '/member?mid=${_searchController.controller.text}',
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          IconButton(
+            tooltip: '清空',
+            icon: const Icon(Icons.clear, size: 22),
+            onPressed: _searchController.onClear,
+          ),
+          IconButton(
+            tooltip: '搜索',
+            onPressed: _searchController.submit,
+            icon: const Icon(Icons.search, size: 22),
+          ),
+          const SizedBox(width: 10),
+        ],
+        title: TextField(
+          autofocus: true,
+          focusNode: _searchController.searchFocusNode,
+          controller: _searchController.controller,
+          textInputAction: TextInputAction.search,
+          onChanged: _searchController.onChange,
+          decoration: InputDecoration(
+            visualDensity: .standard,
+            hintText: _searchController.hintText ?? '搜索',
+            border: InputBorder.none,
+          ),
+          onSubmitted: (value) => _searchController.submit(),
+        ),
       ),
-    ),
-    actions: [
-      Obx(
-        () => _searchController.showUidBtn.value
-            ? IconButton(
-                tooltip: 'UID搜索用户',
-                icon: const Icon(Icons.person_outline, size: 22),
-                onPressed: () => Get.toNamed(
-                  '/member?mid=${_searchController.controller.text}',
-                ),
-              )
-            : const SizedBox.shrink(),
-      ),
-      IconButton(
-        tooltip: '清空',
-        icon: const Icon(Icons.clear, size: 22),
-        onPressed: _searchController.onClear,
-      ),
-      IconButton(
-        tooltip: '搜索',
-        onPressed: _searchController.submit,
-        icon: const Icon(Icons.search, size: 22),
-      ),
-      const SizedBox(width: 10),
-    ],
-    title: TextField(
-      autofocus: true,
-      focusNode: _searchController.searchFocusNode,
-      controller: _searchController.controller,
-      textInputAction: TextInputAction.search,
-      onChanged: _searchController.onChange,
-      decoration: InputDecoration(
-        visualDensity: .standard,
-        hintText: _searchController.hintText ?? '搜索',
-        border: InputBorder.none,
-      ),
-      onSubmitted: (value) => _searchController.submit(),
-    ),
-  );
+    );
+  }
 
   Widget _buildSearchSuggest() {
     return Obx(() {

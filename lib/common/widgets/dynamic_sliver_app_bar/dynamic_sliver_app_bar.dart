@@ -1,3 +1,4 @@
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 /*
  * This file is part of PiliPlus
  *
@@ -128,7 +129,8 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
       currentExtent: math.max(minExtent, maxExtent - shrinkOffset),
       isScrolledUnder: isScrolledUnder,
       hasLeading: leading != null || automaticallyImplyLeading,
-      child: AppBar(
+      child: BarBlur(
+        child: AppBar(
         clipBehavior: clipBehavior,
         leading: leading,
         automaticallyImplyLeading: automaticallyImplyLeading,
@@ -161,6 +163,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
         forceMaterialTransparency: forceMaterialTransparency,
         useDefaultSemanticsOrder: useDefaultSemanticsOrder,
         actionsPadding: actionsPadding,
+        ),
       ),
     );
   }

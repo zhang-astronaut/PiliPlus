@@ -1,6 +1,7 @@
-import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
+import 'package:PiliPlus/common/ui_kit/miuix_page.dart';
 import 'package:PiliPlus/models/common/setting_type.dart';
 import 'package:PiliPlus/pages/setting/models/model.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:material_ui/material_ui.dart';
 
 class CommonSetting extends StatefulWidget {
@@ -18,7 +19,6 @@ class CommonSetting extends StatefulWidget {
 }
 
 class _CommonSettingState extends State<CommonSetting> {
-  late EdgeInsets padding;
   late List<SettingsModel> settings;
 
   void _initSetting() {
@@ -39,26 +39,64 @@ class _CommonSettingState extends State<CommonSetting> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    padding = MediaQuery.viewPaddingOf(context);
+  /// Group consecutive preference rows under section titles into MiuixCards.
+  List<Widget> _buildGrouped() {
+    final result = <Widget>[];
+    var buffer = <Widget>[];
+    String? sectionTitle;
+
+    void flush() {
+      if (buffer.isEmpty) return;
+      if (sectionTitle != null) {
+        result.add(MiuixSmallTitle(sectionTitle!));
+      }
+      result.add(
+        MiuixCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: buffer,
+          ),
+        ),
+      );
+      buffer = <Widget>[];
+      sectionTitle = null;
+    }
+
+    for (final model in settings) {
+      if (model is SectionModel) {
+        flush();
+        sectionTitle = model.sectionTitle;
+      } else {
+        buffer.add(model.widget);
+      }
+    }
+    flush();
+    return result;
+  }
+
+  Widget _buildList(EdgeInsets padding) {
+    return ListView(
+      key: ValueKey(widget.settingType),
+      padding: padding,
+      children: _buildGrouped(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final showAppBar = widget.showAppBar;
-    return SimpleScaffold(
-      appBar: showAppBar ? AppBar(title: Text(widget.settingType.title)) : null,
-      body: ListView.builder(
-        key: ValueKey(widget.settingType),
-        padding: EdgeInsets.only(
-          left: showAppBar ? padding.left : 0,
-          right: showAppBar ? padding.right : 0,
-          bottom: padding.bottom + 100,
+    if (!widget.showAppBar) {
+      // Embedded pane: parent already supplies scaffold padding.
+      return _buildList(const EdgeInsets.fromLTRB(12, 0, 12, 100));
+    }
+    return PiliMiuixPage(
+      title: widget.settingType.title,
+      content: (context, contentPadding) => _buildList(
+        contentPadding.copyWith(
+          left: contentPadding.left + 12,
+          right: contentPadding.right + 12,
+          bottom: contentPadding.bottom + 100,
         ),
-        itemCount: settings.length,
-        itemBuilder: (context, index) => settings[index].widget,
       ),
     );
   }

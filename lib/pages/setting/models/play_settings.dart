@@ -23,6 +23,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:material_ui/material_ui.dart';
 
 List<SettingsModel> get playSettings => [
+  const SectionModel('弹幕'),
   const SwitchModel(
     title: '弹幕开关',
     subtitle: '是否展示弹幕',
@@ -76,6 +77,7 @@ List<SettingsModel> get playSettings => [
     setKey: SettingBoxKey.showBatteryLevel,
     defaultVal: PlatformUtils.isMobile,
   ),
+  const SectionModel('手势与控制'),
   const SwitchModel(
     title: '双击快退/快进',
     subtitle: '左侧双击快退/右侧双击快进，关闭则双击均为暂停/播放',
@@ -185,6 +187,7 @@ List<SettingsModel> get playSettings => [
     setKey: SettingBoxKey.enableVerticalExpand,
     defaultVal: false,
   ),
+  const SectionModel('全屏'),
   const SwitchModel(
     title: '自动全屏',
     subtitle: '视频开始播放时进入全屏',
@@ -206,6 +209,7 @@ List<SettingsModel> get playSettings => [
     setKey: SettingBoxKey.enableLongShowControl,
     defaultVal: false,
   ),
+  const SectionModel('后台播放'),
   if (PlatformUtils.isMobile)
     const SwitchModel(
       title: '后台播放',

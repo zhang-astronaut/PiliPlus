@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
 List<SettingsModel> get recommendSettings => [
+  const SectionModel('推荐内容'),
   const SwitchModel(
     title: '首页使用app端推荐',
     subtitle: '若web端推荐不太符合预期，可尝试切换至app端推荐',
@@ -48,6 +49,7 @@ List<SettingsModel> get recommendSettings => [
       }
     },
   ),
+  const SectionModel('过滤器'),
   getVideoFilterSelectModel(
     title: '点赞率',
     suffix: '%',

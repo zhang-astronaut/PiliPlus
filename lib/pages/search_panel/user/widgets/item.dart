@@ -2,6 +2,7 @@ import 'package:PiliPlus/common/widgets/pendant_avatar.dart';
 import 'package:PiliPlus/models/search/result.dart';
 import 'package:PiliPlus/utils/bili_utils.dart';
 import 'package:PiliPlus/utils/num_utils.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:material_ui/material_ui.dart';
@@ -17,9 +18,10 @@ class SearchUserItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = MiuixTheme.of(context).colors;
     final style = TextStyle(
       fontSize: theme.textTheme.labelSmall!.fontSize,
-      color: theme.colorScheme.outline,
+      color: colors.onSurfaceVariantSummary,
     );
     return Material(
       type: MaterialType.transparency,
@@ -44,11 +46,9 @@ class SearchUserItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
+                    MiuixText(
                       item.uname!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
+                      fontSize: 14,
                     ),
                     const SizedBox(width: 6),
                     BiliUtils.levelPicture(

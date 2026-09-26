@@ -8,6 +8,7 @@ import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/pages/rcmd/controller.dart';
 import 'package:PiliPlus/utils/grid.dart';
 import 'package:PiliPlus/utils/storage_pref.dart';
+import 'package:flutter_miuix/miuix.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -28,7 +29,6 @@ class _RcmdPageState extends State<RcmdPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final colorScheme = ColorScheme.of(context);
     return Container(
       clipBehavior: .hardEdge,
       margin: const .symmetric(horizontal: Style.safeSpace),
@@ -42,7 +42,7 @@ class _RcmdPageState extends State<RcmdPage>
             SliverPadding(
               padding: const .only(top: Style.cardSpace, bottom: 100),
               sliver: Obx(
-                () => _buildBody(colorScheme, controller.loadingState.value),
+                () => _buildBody(controller.loadingState.value),
               ),
             ),
           ],
@@ -60,7 +60,6 @@ class _RcmdPageState extends State<RcmdPage>
   );
 
   Widget _buildBody(
-    ColorScheme colorScheme,
     LoadingState<List<dynamic>?> loadingState,
   ) {
     return switch (loadingState) {
@@ -79,16 +78,13 @@ class _RcmdPageState extends State<RcmdPage>
                         onTap: () => controller
                           ..animateToTop()
                           ..onRefresh(),
-                        child: Card(
-                          child: Container(
+                        child: const MiuixCard(
+                          insideMargin: EdgeInsets.symmetric(horizontal: 10),
+                          child: Align(
                             alignment: Alignment.center,
-                            padding: const .symmetric(horizontal: 10),
-                            child: Text(
+                            child: MiuixText(
                               '上次看到这里\n点击刷新',
-                              textAlign: .center,
-                              style: TextStyle(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
